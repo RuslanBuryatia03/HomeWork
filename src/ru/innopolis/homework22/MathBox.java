@@ -9,6 +9,15 @@ import java.util.List;
 public class MathBox<T extends Number> {
 
     List<T> list;
+    private final int id; // = (long) Math.random()*100000000;
+
+    {
+        id = (int) Math.random()*100000000;;
+    }
+//    public MathBox() {
+//        id = (int) Math.random()*100000000;;
+//    }
+
 
     MathBox(T[] arr) {
         Arrays.sort(arr);  // падает если есть null
@@ -186,18 +195,17 @@ public class MathBox<T extends Number> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MathBox mathBox = (MathBox) o;
-        return this.list.equals(o);
+        if (this == o) {
+            return true;
+        } else return false;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        MathBox mathBox = (MathBox) o;
+//        return this.list.equals(o);
     }
 
     @Override
     public int hashCode() {
-        int hashCode = 1;
-        for (Number e : list)
-            hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
-        return (Integer) hashCode;
+        return id;
     }
 
     @Override
