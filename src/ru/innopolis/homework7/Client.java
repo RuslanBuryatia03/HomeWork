@@ -5,10 +5,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- * Класс реализует клиента для общения с сервером через Socket.
+ * Класс реализует клиента для взаимодействия с сервером через Socket.
  */
 
-public class Client {
+class Client {
 
     private final String HOST;
     private final int PORT;
@@ -19,16 +19,20 @@ public class Client {
     Client(String host, int port) {
         this.PORT = port;
         this.HOST = host;
-//        this.login = "";
+        this.login = "";
     }
 
+    /**
+     * Запускает потоки на чтение сообщений от сервера и отправку
+     * сообщений, введенных с консоли
+     */
 
-    public void talkWithServer() throws InterruptedException {
+    void talkWithServer()  {
 
         try {
             socket = new Socket(HOST, PORT);
             enterLogin();
-//            System.out.println("соединились" + socket);
+            System.out.println("соединились: " + socket);
             ReadMsg readMsg = new ReadMsg(socket);
             readMsg.join();
             readMsg.start();
@@ -37,13 +41,16 @@ public class Client {
             writeMsg.join();
             writeMsg.start();
         } catch (IOException e) {
+            System.out.println("Ошибка IO");
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            System.out.println("Процесс прерван");
             e.printStackTrace();
         }
-//        System.out.println("client done");
     }
 
     /**
-     *
+     * Заносит введенное с консоли имя клиента в поле login
      */
     private void enterLogin() {
         System.out.println("Введите свое имя: ");
@@ -61,13 +68,20 @@ public class Client {
         System.out.println("Ваше имя: " + line);
     }
 
+    /**
+     * Класс для получения сообщений от сервера, расширяет класс Thread
+     */
     private class ReadMsg extends Thread {
-
         private final Socket socket;
 
         ReadMsg(Socket socket) {
             this.socket = socket;
         }
+
+        /**
+         * Метод запускается в отдельном потоке, получает сообщения
+         * от сервера.
+         */
 
         @Override
         public void run() {
@@ -79,26 +93,31 @@ public class Client {
                     if (line.equalsIgnoreCase(login + ": Закрыть " + login)) {
                         System.out.println("Закрываю чтение");
                         socket.close();
-//                        Server.serverList.remove();
                         break;
                     }
                 }
             } catch (IOException e) {
+                System.out.println("Ошибка IO");
                 e.printStackTrace();
             }
         }
     }
 
-
+    /**
+     * Отправляет введенные с консоли сообщения на сервер, расширяет класс Thread
+     */
     private class WriteMsg extends Thread {
 
         private final Socket socket;
-//        private login
 
         WriteMsg(Socket socket) {
             this.socket = socket;
         }
 
+        /**
+         * Метод считывает сообщения введенные с консоли и отправляет на сервер
+         * от сервера.
+         */
         @Override
         public void run() {
             try {
@@ -106,7 +125,6 @@ public class Client {
                 Scanner scanner = new Scanner(System.in);
                 while (true) {
                     String line = scanner.nextLine();
-//                    System.out.println("отправка " + line);
                     out.write(login + ": " + line + "\n");
                     out.flush();
                     if (line.equalsIgnoreCase( "Закрыть " + login)) {
@@ -115,6 +133,7 @@ public class Client {
                     }
                 }
             } catch (IOException e) {
+                System.out.println("Ошибка IO");
                 e.printStackTrace();
             }
         }
