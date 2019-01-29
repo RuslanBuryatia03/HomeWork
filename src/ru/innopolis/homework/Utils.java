@@ -39,9 +39,8 @@ public class Utils {
     static void insertToArray(Integer[] arrIn, int indexInsert, int indexCurrent) {
         int temp = arrIn[indexInsert];
         arrIn[indexInsert] = arrIn[indexCurrent];
-        for (int i = indexCurrent; i > indexInsert; i--) {
-            arrIn[i] = arrIn[i - 1];
-        }
+        if (indexCurrent - indexInsert >= 0)
+            System.arraycopy(arrIn, indexInsert, arrIn, indexInsert + 1, indexCurrent - indexInsert);
         arrIn[indexInsert + 1] = temp;
     }
 
@@ -54,7 +53,7 @@ public class Utils {
      */
     static Integer[] subArray(Integer[] arr, int indStart, int indEnd) {
         if ((indStart > indEnd) || (indStart < 0) && (indEnd < 0)){
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         } else {
             return Arrays.copyOfRange(arr, indStart, indEnd);
         }
