@@ -2,65 +2,71 @@ package ru.innopolis.homework2;
 
 import java.util.*;
 
+/**
+ * Класс реализующий методы деления массива Integer на число, а также метод
+ * суммирующий все элементы.
+ */
+
 public class MathBox {
 
-    List<Integer> list;
-    private final int id; // = (long) Math.random()*100000000;
-
+    private List<Integer> list;
+    private final int id;
+    private final Random random = new Random();
     {
-        id = (int) Math.random()*100000000;;
+        id = random.nextInt(100000000);
     }
-//    public MathBox() {
-//        id = (int) Math.random()*100000000;;
-//    }
-
 
     MathBox(Integer[] arr) {
-        Arrays.sort(arr);  // падает если есть null
-        list = new ArrayList<Integer>(Arrays.asList(arr));
-
-        for(int i = 0; i< arr.length; i++) {
-            System.out.println(arr[i]);
-        }
-        System.out.println();
+        Arrays.sort(arr);
+        list = new ArrayList<>(Arrays.asList(arr));
+        System.out.println(Arrays.toString(arr));
     }
 
-    public int summator() {
+    /**
+     * Суммирует все элементы массива
+     * @return сумму всех элементов
+     */
+    int summator() {
         int sum = 0;
         for (Integer el : list) {
-            sum += el.intValue();
+            sum += el;
         }
         return sum;
     }
 
-    public List<Integer> splitter(int divider) {
+    /**
+     * Производит деление каждого элемента массива на
+     * целое число divider
+     * @param divider делитель
+     * @return List<Integer> целых чисел
+     * @throws ArithmeticException выбрасывается, если делитель равен 0
+     */
+    List<Integer> splitter(int divider) throws ArithmeticException {
         if (divider == 0) {
-            System.out.println("деление на ноль");
-            return null;
+            throw new ArithmeticException("Деление на ноль");
         }
-        List<Integer> listDiv = new ArrayList<Integer>();
+        List<Integer> listDiv = new ArrayList<>();
         for (Integer el : list) {
             listDiv.add(el/divider);
-        }
-        for (Integer el : listDiv) {
-            System.out.println(el.intValue());
         }
         return listDiv;
     }
 
-    public List<Double> splitter(double divider) {
-        List<Double> listDiv = new ArrayList<Double>();
-        for (Integer el : list) {
-            listDiv.add(el/divider);
-        }
-        System.out.println(this.toString());
-//        for (Double el : listDiv) {
-//            System.out.println(el.doubleValue());
-//        }
-        return listDiv;
+    /**
+     * Метод выводит на консоль List<Integer>
+     * @param listDiv List<Integer>
+     */
+    void printList(List<Integer> listDiv) {
+        System.out.println(Arrays.toString(listDiv.toArray(new Integer[0])));
     }
 
-    public boolean deleteEl(Integer insEl) {
+
+    /**
+     * Удаляет из List<Integer> элемент
+     * @param insEl элементы, который хотим удалить
+     * @return true, если элемент найден и успешно удалено, иначе false
+     */
+    boolean deleteEl(Integer insEl) {
         if (list.contains(insEl)){
             list.remove(insEl);
             return true;
@@ -72,12 +78,7 @@ public class MathBox {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else return false;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        MathBox mathBox = (MathBox) o;
-//        return this.list.equals(o);
+        return this == o;
     }
 
     @Override
@@ -87,10 +88,6 @@ public class MathBox {
 
     @Override
     public String toString() {
-        String str = "";
-        for (Integer el : list) {
-            str = str + el+" ";
-        }
-        return str;
+        return list.toString();
     }
 }
