@@ -20,6 +20,8 @@ public class ThreadSource implements Callable<List<String>> {
         this.words = words;
     }
 
+
+
     @Override
     public List<String> call() {
 
@@ -69,17 +71,38 @@ public class ThreadSource implements Callable<List<String>> {
 
                 Pattern patternWord = Pattern.compile(words[i].toUpperCase());
                 Matcher matcherWord = patternWord.matcher(stringUpper);
-                while (matcherWord.find()) {
-                    Pattern patternSentence = Pattern.compile("[А-ЯA-Z].+?[.?!]");
-                    Matcher matcherSentence = patternSentence.matcher(string);
-                    while (matcherSentence.find()) {
-                        if (matcherWord.start() >= matcherSentence.start() && matcherWord.end() <= matcherSentence.end()
-                                && (!findSentences.contains(string.substring(matcherSentence.start(), matcherSentence.end())))) {
+                addSentences(string, findSentences, matcherWord);
+            }
+        }
+    }
 
-                            findSentences.add(string.substring(matcherSentence.start(), matcherSentence.end()));
-                        }
-                    }
-                }
+    /**
+     * Добавляет предложения, в которых найдены слова из массива
+     * @param string строка, в котором содержится предложение с найденными словами
+     * @param findSentences Лист с найденными предложениями
+     * @param matcherWord матчер слов по строке, в которой найдены слова
+     */
+    private void addSentences(String string, List<String> findSentences, Matcher matcherWord) {
+        while (matcherWord.find()) {
+            Pattern patternSentence = Pattern.compile("[А-ЯA-Z].+?[.?!]");
+            Matcher matcherSentence = patternSentence.matcher(string);
+            findMatch(string, findSentences, matcherWord, matcherSentence);
+        }
+    }
+
+    /**
+     * Добавляет предложения, в которых найдены слова из массива
+     * @param string строка, в котором содержится предложение с найденными словами
+     * @param findSentences   Лист с найденными предложениями
+     * @param matcherWord  матчер слов по строке, в которой найдены слова
+     * @param matcherSentence матчер предложений по строке, в которой найдены слова
+     */
+    private void findMatch(String string, List<String> findSentences, Matcher matcherWord, Matcher matcherSentence) {
+        while (matcherSentence.find()) {
+            if (matcherWord.start() >= matcherSentence.start() && matcherWord.end() <= matcherSentence.end()
+                    && (!findSentences.contains(string.substring(matcherSentence.start(), matcherSentence.end())))) {
+
+                findSentences.add(string.substring(matcherSentence.start(), matcherSentence.end()));
             }
         }
     }
