@@ -2,12 +2,13 @@ package ru.innopolis.homework3;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static ru.innopolis.homework3.Main.LIST_WORDS_SIZE;
+
 
 public class GeneratorTxtFile {
 
@@ -16,24 +17,25 @@ public class GeneratorTxtFile {
     private final Random randomInt = new Random();
 
 
-    List<String> fillListWords(String sourse) {
+    String[] fillListWords(String sourse, int count_words) {
 
         List<String> words = new ArrayList<>();
+        String[] wordArr = new String[count_words];
 
         try (InputStream input = new URL(sourse).openStream()) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
 
                 while (reader.ready()) {
                     String line = reader.readLine();
-                    List<String> d = findWord(line);
-                    if (!(d == null)) {
-                        words.addAll(findWord(line));
+                    List<String> d;
+                    if ((d = findWord(line)) != null) {
+                        words.addAll(d);
                     }
-                    if (words.size() >= LIST_WORDS_SIZE) break;
+                    if (words.size() >= count_words) break;
                     System.out.println(line);
                 }
 
-                String[] wordArr = words.toArray(new String[words.size()]);  ///new String[randomInt.nextInt(1000)];
+                wordArr = words.toArray(new String[count_words]);  ///new String[randomInt.nextInt(1000)];
 //                words.toArray(new String[words.size()])
 //                for (int i = 0; i < wordArr.length; i++) {
 //                    wordArr[i] = words.get(i);
@@ -51,7 +53,7 @@ public class GeneratorTxtFile {
             System.out.println("Не могу получить данные с ресурса");
             e.printStackTrace();
         }
-        return words;
+        return wordArr;
     }
 
 
@@ -163,8 +165,6 @@ public class GeneratorTxtFile {
                 }
                 // предложение формируем
 //                int
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -183,15 +183,6 @@ public class GeneratorTxtFile {
         }
     }
 
-
-
-    /**
-     * @param - maxValue - максимальное значение
-     * @return возвращает int - произвольное целое от 1 доо maxValue
-     */
-//    int randomInt(int maxValue) {
-//        return maxValue - ((int) (Math.random() * maxValue));
-//    }
     /**
      * Возвращает либо конец предложения (, ! ?), либо конец слова (пробел, запятая+пробел)
      *
@@ -215,10 +206,9 @@ public class GeneratorTxtFile {
      *
      * @param string входящяя строка
      * @return ArrayList<String> слов
-     * @throws UnsupportedEncodingException
      */
-    private List<String> findWord(String string) throws UnsupportedEncodingException {
-        if (string.length() == 0 || string == null) {
+    private List<String> findWord(String string) {
+        if (string.length() == 0) {
             return null;
         }
 
@@ -230,10 +220,10 @@ public class GeneratorTxtFile {
         boolean beginWord = false;
         boolean endWord = false;
 
-        for (int i = 0; i < tempArray.length; i++) {
+        for (char c : tempArray) {
 
-            if (checkChar(tempArray[i])) {
-                oneWord.add(tempArray[i]);
+            if (checkChar(c)) {
+                oneWord.add(c);
                 if (!beginWord) beginWord = true;
             } else {
                 if (beginWord) endWord = true;
@@ -266,8 +256,8 @@ public class GeneratorTxtFile {
         }
         byte[] arrayByte = word.getBytes(); //new byte[]{1, 3, 5, 7};
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(arrayByte);
-        for (int i = 0; i < arrayByte.length; i++) {
-            if (!((65 <= arrayByte[i]) && (arrayByte[i] <= 90) || ((97 <= arrayByte[i]) && (arrayByte[i] <= 122)) || arrayByte[i] == 45)) {
+        for (byte b : arrayByte) {
+            if (!((65 <= b) && (b <= 90) || ((97 <= b) && (b <= 122)) || b == 45)) {
                 return false;
             }
         }
@@ -282,13 +272,9 @@ public class GeneratorTxtFile {
      * @return true - если буква латинского алфавита, инача false
      */
 
-    static boolean checkChar(char ch) {
+    private boolean checkChar(char ch) {
 //        if ((65<= ch) && ( ch <= 90)  || ((97 <= ch) && ( ch <= 122)) || ch == 45) {
-        if ((65 <= ch) && (ch <= 90) || ((97 <= ch) && (ch <= 122))) {
-            return true;
-        } else {
-            return false;
-        }
+        return (65 <= ch) && (ch <= 90) || ((97 <= ch) && (ch <= 122));
     }
 
 
