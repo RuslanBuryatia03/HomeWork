@@ -8,14 +8,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-
+/**
+ * Класс для генерации текстовых файлов
+ * заданного размера
+ */
 
 public class GeneratorTxtFile {
 
-//    private final String url;
+    public static final int NUMBER_SENTENCES = 20;
+    public static final int NUMBER_WORDS = 15;
+    public static final int PROBABILITY_COMMA = 15;
+    public static final int PROBABILITY_END_SENTENCE = 3;
+    public static final int LENGTH_WORD = 15;
 
     private final Random randomInt = new Random();
 
+    /**
+     * Заполняет массив слов длиной count_words из sourse
+     * @param sourse источник
+     * @param count_words количество слов в массиве
+     * @return  String[] длиной count_words
+     */
 
     String[] fillListWords(String sourse, int count_words) {
 
@@ -35,13 +48,7 @@ public class GeneratorTxtFile {
                     System.out.println(line);
                 }
 
-                wordArr = words.toArray(new String[count_words]);  ///new String[randomInt.nextInt(1000)];
-//                words.toArray(new String[words.size()])
-//                for (int i = 0; i < wordArr.length; i++) {
-//                    wordArr[i] = words.get(i);
-//                }
-
-                getFiles("C://111", 20, 10000, wordArr, 2);
+                wordArr = words.toArray(new String[count_words]);
             } catch (UnsupportedEncodingException e) {
                 System.out.println("Неподдерживаемая кодировка");
                 e.printStackTrace();
@@ -56,6 +63,15 @@ public class GeneratorTxtFile {
         return wordArr;
     }
 
+    /**
+     * Генерирует по заданному пути path n файлов размером size из массива слов words с вероятностью
+     * вхождения слова в предложение probability.
+     * @param path путь для сохранения файлов
+     * @param n количество файлов
+     * @param size размер каждого файла
+     * @param words массив слов
+     * @param probability вероятность вхождения каждого слова в предложение
+     */
 
     void getFiles(String path, int n, int size, String[] words, int probability) {
 
@@ -66,26 +82,26 @@ public class GeneratorTxtFile {
             int fileSize = 0;
             try (FileOutputStream fileOutputStream = new FileOutputStream(new File(path, fileName))) {
 
-                boolean beginSent = false;   // признак начала предложения
-                int numberWord = 0;   // количество слов в предложении
-                int currentNumberWord = 0;   // текущее количество слов
-                int numberSent = randomInt.nextInt(20) +1;    // количество предложений в абзаце
-                int currentNumberSent = 0;  // текущее количество предложений
+                boolean beginSent = false;
+                int numberWord = 0;
+                int currentNumberWord = 0;
+                int numberSent = randomInt.nextInt(NUMBER_SENTENCES) + 1;
+                int currentNumberSent = 0;
 
                 for (int j = currentIndex; j < words.length; j++) {
-                    if (randomInt.nextInt(probability) +1 > 1) {
-                        if (j == words.length - 1) { // находимся на последнем шаге, у нас закончился массив слов, а файл не заполнен до конца, начинаем массив слов сначала
+                    if (randomInt.nextInt(probability) + 1 > 1) {
+                        if (j == words.length - 1) {
                             j = 0;
                             currentIndex = 0;
                         }
-                        continue;   // вероятность вхождения слова в предложение - у нас числа от 1 до probability, если = 1, то входит, иначе нет
+                        continue;
                     }
                     byte[] buffer = words[j].getBytes();
-                    int comma = randomInt.nextInt(15) +1;   // будем ли ставить запятую, если = 3 (наугад) то да, иначе нет.
-                    if (fileSize + buffer.length + 4 <= size) {   // смотрим можем ли добавить следующее слово (с пробелом и/или с запятой)
-                        if (!beginSent) {   // начало предложения с заглавной буквы
+                    int comma = randomInt.nextInt(PROBABILITY_COMMA) + 1;
+                    if (fileSize + buffer.length + 4 <= size) {
+                        if (!beginSent) {
                             beginSent = true;
-                            numberWord = randomInt.nextInt(15) +1;
+                            numberWord = randomInt.nextInt(NUMBER_WORDS) + 1;
                             wordToUpperCase(buffer);
                         }
 
@@ -95,19 +111,7 @@ public class GeneratorTxtFile {
                         String tokenPrepination = insertPrepination(currentNumberWord, numberWord, comma);
                         switch (tokenPrepination) {
                             case ". ":
-//                                beginSent = false;
-//                                currentNumberWord = 0;  // текущее количество слов в предложении обнуляем
-//                                ++currentNumberSent;   // увеличиваем количество предложений
-//                                fileOutputStream.write(". ".getBytes(), 0, 2);
-//                                fileSize += 2;
-//                                break;
                             case "! ":
-//                                beginSent = false;
-//                                currentNumberWord = 0;
-//                                ++currentNumberSent;
-//                                fileOutputStream.write("! ".getBytes(), 0, 2);
-//                                fileSize += 2;
-//                                break;
                             case "? ":
                                 beginSent = false;
                                 currentNumberWord = 0;
@@ -116,23 +120,20 @@ public class GeneratorTxtFile {
                                 fileSize += 2;
                                 break;
                             case ", ":
-//                                fileOutputStream.write(", ".getBytes(), 0, 2);
-//                                fileSize += 2;
-//                                break;
                             case " ":
                                 fileOutputStream.write(tokenPrepination.getBytes(), 0, 1);
                                 fileSize += 1;
                                 break;
                         }
 
-                        if (numberSent == currentNumberSent) {   // сформировали абзац
+                        if (numberSent == currentNumberSent) {
                             currentNumberSent = 0;
-                            numberSent = randomInt.nextInt(20) +1;
+                            numberSent = randomInt.nextInt(NUMBER_SENTENCES) + 1;
                             fileOutputStream.write("\n".getBytes(), 0, 1);
                             fileSize += 1;
 
                         }
-                        if (j == words.length - 1) { // находимся на последнем шаге, у нас закончился массив слов, а файл не заполнен до конца, начинаем массив слов сначала
+                        if (j == words.length - 1) {
                             j = 0;
                             currentIndex = 0;
                         }
@@ -143,42 +144,27 @@ public class GeneratorTxtFile {
                             currentIndex = j;
                         } else {
                             byte[] temp = new byte[size - fileSize];
-                            Arrays.fill(temp, (byte) 32);       // заполняем пробелами
+                            Arrays.fill(temp, (byte) 32);
                             fileOutputStream.write(temp, 0, temp.length);
                         }
-
-//                        switch (size - fileSize) {
-//                            case 0:
-//                                currentIndex = j;  // запомнили индекс  на котором закончили формирование 1-го файла, чтобы продолжить формирование файла с этого индекса
-//                                break;
-//                            default:    // дополняем пробелами
-//                                byte[] temp = new byte[size - fileSize];
-//                                Arrays.fill(temp, (byte) 32);       // заполняем пробелами
-//                                fileOutputStream.write(temp, 0, temp.length);
-//                        }
-
-
                         fileOutputStream.close();
-
-                        break;          // выходим из внутреннего цикла
+                        break;
                     }
                 }
-                // предложение формируем
-//                int
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     /**
      * Если в массиве первый символ не заглавная, переводит в заглавную.
+     *
      * @param buffer массив
      */
     private void wordToUpperCase(byte[] buffer) {
         byte alh = 32;
-        if (!(65 <= buffer[0] && buffer[0] <= 90)) { // если не заглавная буква, то делаем заглавной
+        if (!(65 <= buffer[0] && buffer[0] <= 90)) {
             buffer[0] = (byte) (buffer[0] - alh);
         }
     }
@@ -192,10 +178,10 @@ public class GeneratorTxtFile {
      * @return либо конец предложения (, ! ?), либо конец слова (пробел, запятая+пробел)
      */
     private String insertPrepination(int currentNumberWord, int numberWord, int comma) {
-        if (currentNumberWord == numberWord) {   // окончание предложения, возвращаем одно из . ! ?
-            int sign = randomInt.nextInt(3) +1;
+        if (currentNumberWord == numberWord) {
+            int sign = randomInt.nextInt(PROBABILITY_END_SENTENCE) + 1;
             return sign == 1 ? ". " : sign == 2 ? "! " : "? ";
-        } else {                // не окончание предложения пробел либо запятая пробел
+        } else {
             return comma == 3 ? ", " : " ";
         }
 
@@ -214,9 +200,8 @@ public class GeneratorTxtFile {
 
         char[] tempArray = new char[string.length()];
         string.getChars(0, string.length() - 1, tempArray, 0);
-
-        List<String> wordsOfString = new ArrayList<>();  // слова из строки
-        List<Character> oneWord = new ArrayList<>();  // одно слово
+        List<String> wordsOfString = new ArrayList<>();
+        List<Character> oneWord = new ArrayList<>();
         boolean beginWord = false;
         boolean endWord = false;
 
@@ -230,7 +215,7 @@ public class GeneratorTxtFile {
             }
             if (beginWord && endWord) {
 
-                if (oneWord.size() <= 15) {
+                if (oneWord.size() <= LENGTH_WORD) {
                     StringBuilder t = new StringBuilder();
                     for (Character e : oneWord) {
                         t.append(e);
@@ -245,25 +230,6 @@ public class GeneratorTxtFile {
         return wordsOfString;
     }
 
-    /**
-     * @param word - проверяет длину слова (1..15), а также наличие только латинских символов или -.
-     * @return boolean - если слово удовлетворяет нашим условиям, возвращает true, иначе false.
-     */
-    private boolean checkLengthWord(String word) {
-
-        if (!((1 <= word.length()) && (word.length() <= 15))) {
-            return false;
-        }
-        byte[] arrayByte = word.getBytes(); //new byte[]{1, 3, 5, 7};
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(arrayByte);
-        for (byte b : arrayByte) {
-            if (!((65 <= b) && (b <= 90) || ((97 <= b) && (b <= 122)) || b == 45)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 
     /**
      * Проверяет является ли символ буквой латинского алфавита
@@ -273,9 +239,6 @@ public class GeneratorTxtFile {
      */
 
     private boolean checkChar(char ch) {
-//        if ((65<= ch) && ( ch <= 90)  || ((97 <= ch) && ( ch <= 122)) || ch == 45) {
         return (65 <= ch) && (ch <= 90) || ((97 <= ch) && (ch <= 122));
     }
-
-
 }
