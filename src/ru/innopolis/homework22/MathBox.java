@@ -1,206 +1,107 @@
 package ru.innopolis.homework22;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+
+/**
+ * Класс с параметром, расширяющим Number. Содержит методы суммирования элементов
+ * List<T> , деления каждого элемента на заданное число, удаления элемента из List<T>.
+ *
+ * @param <T>
+ */
 
 public class MathBox<T extends Number> {
 
-    List<T> list;
-    private final int id; // = (long) Math.random()*100000000;
+    private List<T> list;
+    private final int id;
+    private final static Random random = new Random();
 
-    {
-        id = (int) Math.random()*100000000;;
+    private MathBox() {
+        id = random.nextInt(100000000);
     }
-//    public MathBox() {
-//        id = (int) Math.random()*100000000;;
-//    }
-
 
     MathBox(T[] arr) {
-        Arrays.sort(arr);  // падает если есть null
-        list = new ArrayList<T>(Arrays.asList(arr));
-
-        for (int i = 0; i < arr.length; i++) {
-            System.out.println(arr[i]);
+        this();
+        Arrays.sort(arr);
+        list = new ArrayList<>(Arrays.asList(arr));
+        DecimalFormat myFormatter = new DecimalFormat("### ###.##############");
+        String output;
+        for (T t : arr) {
+            output = myFormatter.format(t);
+            System.out.println(output);
         }
-        System.out.println();
     }
 
-    //public static<T> T identity(T arg) { return arg; };
+    /**
+     * Суммирует все элементы
+     *
+     * @return сумму всех элементов
+     */
 
-//    public BigDecimal summator() {
-//        BigDecimal sum = BigDecimal.valueOf(0);                //identity(Integer.valueOf(0));
-//
-//        for (T el : list) {
-//            //double dd = (el instanceof Double) ? el.doubleValue(): el.intValue();
-//            sum = sum.add(BigDecimal.valueOf(el.doubleValue()));
-//        }
-//        return sum;
-//    }
+    T summator() {
 
-
-    public Number summator(String numberClassName) {
-        BigDecimal sum = BigDecimal.valueOf(0);                //identity(Integer.valueOf(0));
-
+        BigDecimal sum = BigDecimal.valueOf(0);
         for (T el : list) {
-            //double dd = (el instanceof Double) ? el.doubleValue(): el.intValue();
             sum = sum.add(BigDecimal.valueOf(el.doubleValue()));
         }
-//        Integer sumInt = null;
-//        Long sumLong = null;
-//        Byte sumByte = null;
-//        Short sumShort  = null;
-//        Double sumDouble = null;
-//        Float  sumFloat  = null;
-
-
-        switch (numberClassName) {
-            case "java.lang.Integer":
-                return sum.intValue();
-            case "java.lang.Long":
-                return sum.longValue();
-            case "java.lang.Byte":
-                return sum.byteValue();
-            case "java.lang.Short":
-                return sum.shortValue();
-            case "java.lang.Double":
-                return sum.doubleValue();
-            case "java.lang.Float":
-                return sum.floatValue();
-
-//            default:
-//                return  null;
-        }
-
-        return null;
+        return (T) sum;
     }
 
-    public List<Number> splitter(T divider, String numberClassName) {
-        List<Number> listDiv = null;
-        switch (numberClassName) {
-            case "java.lang.Integer":
-                if (divider.intValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                } else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Integer) el) / (Integer) divider);
-                    }
-                    return listDiv;
-                }
+    /**
+     * Делит все элементы List<Number> на делитель
+     *
+     * @param divider делитель
+     * @return List<Number>
+     */
 
-            case "java.lang.Long":
-                if (divider.longValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                } else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Long) el) / (Long) divider);
-                    }
-                    return listDiv;
-                }
-            case "java.lang.Byte":
-                if (divider.byteValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                } else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Byte) el) / (Byte) divider);
-                    }
-                    return listDiv;
-                }
-            case "java.lang.Short":
-                if (divider.shortValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                }else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Short) el) / (Short) divider);
-                    }
-                    return listDiv;
-                }
-            case "java.lang.Double":
-                if (divider.doubleValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                }else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Double) el) / (Double) divider);
-                    }
-                    return listDiv;
-                }
-            case "java.lang.Float":
-                if (divider.floatValue() == 0) {
-                    System.out.println("деление на ноль");
-                    return null;
-                }else {
-                    listDiv = new ArrayList<>();
-                    for (T el : list) {
-                        listDiv.add(((Float) el) / (Float) divider);
-                    }
-                    return listDiv;
-                }
+    List<Number> splitter(T divider) {
 
-//            default:
-//                return  null;
+        List<Number> listDiv = new ArrayList<>();
+        String classList = divider.getClass().getCanonicalName();
+        if (classList.equals("java.lang.Long")          ||
+                classList.equals("java.lang.Integer")   ||
+                classList.equals("java.lang.Byte")      ||
+                classList.equals("java.lang.Short")) {
+            Long dividerLong = divider.longValue();
+            if (dividerLong == 0) {
+                System.out.println("деление на ноль");
+                return null;
+            }
+            for (T el : list) {
+                Long elementLong = el.longValue();
+                listDiv.add(elementLong  / dividerLong);
+            }
+            return listDiv;
         }
 
-
-//        List<BigDecimal> listDiv = new ArrayList<>();
-//        for (T el : list) {
-//            listDiv.add(((BigDecimal) el).divide((BigDecimal)divider));
-//        }
-
-//        List<T> listDiv = new ArrayList<>();
-//        for (T el : list) {
-//            listDiv.add( (T)((BigDecimal) el).divide((BigDecimal)divider));
-//        }
-
-
-        for (Number el : listDiv) {
-            System.out.println(el.toString());
+        BigDecimal dividerBigDecimal = BigDecimal.valueOf(divider.doubleValue());
+        for (T el : list) {
+            BigDecimal elementBigDecimal = BigDecimal.valueOf(el.doubleValue()).setScale(10, RoundingMode.HALF_UP  );
+            listDiv.add(elementBigDecimal.divide(dividerBigDecimal, 10,RoundingMode.HALF_UP ));
         }
         return listDiv;
-    }
-//
-//    public List<Double> splitter(double divider) {
-//        List<Double> listDiv = new ArrayList<Double>();
-//        for (Integer el : list) {
-//            listDiv.add(el/divider);
-//        }
-//        System.out.println(this.toString());
-////        for (Double el : listDiv) {
-////            System.out.println(el.doubleValue());
-////        }
-//        return listDiv;
-//    }
-//
-    public boolean deleteEl(Number insEl) {
-        if (list.contains(insEl)){
-            list.remove(insEl);
-            return true;
-        }
-        return false;
-
 
     }
+
+    /**
+     * Удаления элемента из List<T>.
+     *
+     * @param element элемент, который хотим удалить.
+     * @return true если удаление успешно выполнено, иначе false
+     */
+    boolean deleteElement(Number element) {
+        return list.remove(element);
+    }
+
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        } else return false;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        MathBox mathBox = (MathBox) o;
-//        return this.list.equals(o);
+        return this == o;
     }
 
     @Override
@@ -210,10 +111,10 @@ public class MathBox<T extends Number> {
 
     @Override
     public String toString() {
-        String str = "";
+        StringBuilder str = new StringBuilder("");
         for (Number el : list) {
-            str = str + el+" ";
+            str.append(el + " ");
         }
-        return str;
+        return str.toString();
     }
 }
