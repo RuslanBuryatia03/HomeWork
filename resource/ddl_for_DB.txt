@@ -1,0 +1,45 @@
+create table person
+(
+	person_id serial not null
+		constraint person_pkey
+			primary key,
+	name varchar(20) not null
+)
+;
+
+alter table person owner to postgres
+;
+
+create unique index person_name_uindex
+	on person (name)
+;
+
+create table subject
+(
+	subject_id serial not null
+		constraint subject_pkey
+			primary key,
+	description varchar(40)
+)
+;
+
+alter table subject owner to postgres
+;
+
+create table course
+(
+	person_id integer not null
+		constraint course_person_person_id_fk
+			references person,
+	subject_id integer not null
+		constraint course_subject_subject_id_fk
+			references subject,
+	start_date timestamp,
+	constraint course_pk
+		primary key (person_id, subject_id)
+)
+;
+
+alter table course owner to postgres
+;
+
