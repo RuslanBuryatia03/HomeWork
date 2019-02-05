@@ -1,45 +1,43 @@
-create table person
+create table if not exists person
 (
 	person_id serial not null
-		constraint person_pkey
+		constraint person_pk
 			primary key,
-	name varchar(20) not null
-)
-;
+	name varchar(20) not null,
+	birth_date timestamp not null
+);
 
-alter table person owner to postgres
-;
+alter table person owner to postgres;
 
-create unique index person_name_uindex
-	on person (name)
-;
+create unique index if not exists person_person_id_uindex
+	on person (person_id);
 
-create table subject
+
+create table if not exists subject
 (
 	subject_id serial not null
-		constraint subject_pkey
+		constraint subject_pk
 			primary key,
 	description varchar(40)
-)
-;
+);
 
-alter table subject owner to postgres
-;
+alter table subject owner to postgres;
 
-create table course
+
+create table if not exists course
 (
 	person_id integer not null
 		constraint course_person_person_id_fk
-			references person,
+			references person
+				on update restrict on delete restrict,
 	subject_id integer not null
 		constraint course_subject_subject_id_fk
-			references subject,
+			references subject
+				on update restrict on delete restrict,
 	start_date timestamp,
 	constraint course_pk
 		primary key (person_id, subject_id)
-)
-;
+);
 
-alter table course owner to postgres
-;
+alter table course owner to postgres;
 
