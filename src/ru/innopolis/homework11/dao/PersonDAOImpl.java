@@ -89,8 +89,7 @@ public class PersonDAOImpl implements PersonDAO {
         try (PreparedStatement statement = connection.prepareStatement(SELECT_PERSON_BY_ID_SQL_TEMPLATE)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-//            Optional<Person> optionalPerson = Optional.of(addPerson(resultSet));
-            return Optional.ofNullable(addPerson(resultSet));
+            return addPerson(resultSet);
 
         }
     }
@@ -169,12 +168,12 @@ public class PersonDAOImpl implements PersonDAO {
      * @return объект Person, если resultSet непустой, иначе null
      * @throws SQLException ошибка на уровне СУБД или другая ошибка
      */
-    private Person addPerson(ResultSet resultSet) throws SQLException {
+    private Optional<Person> addPerson(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
-            return new Person(resultSet.getInt("person_id"), resultSet.getString("name"),
-                    resultSet.getTimestamp("birth_date").getTime());
+            return Optional.of(new Person(resultSet.getInt("person_id"), resultSet.getString("name"),
+                    resultSet.getTimestamp("birth_date").getTime()));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 

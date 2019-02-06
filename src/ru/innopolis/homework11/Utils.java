@@ -5,6 +5,7 @@ import ru.innopolis.homework11.entity.Subject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 class Utils {
 
@@ -17,13 +18,14 @@ class Utils {
      * @return List<String> с именами
      */
     private static List<String> fillNamePerson() {
+        Random random = new Random();
         List<String> listNamePesron = new ArrayList<>();
-        listNamePesron.add("Abby");
-        listNamePesron.add("Amanda");
-        listNamePesron.add("Joanna");
-        listNamePesron.add("Karen");
-        listNamePesron.add("Kathy");
-        listNamePesron.add("Patricia");
+        listNamePesron.add("Abby"+ random.nextInt(100000));
+        listNamePesron.add("Amanda"+ random.nextInt(100000));
+        listNamePesron.add("Joanna"+ random.nextInt(100000));
+        listNamePesron.add("Karen"+ random.nextInt(100000));
+        listNamePesron.add("Kathy"+ random.nextInt(100000));
+        listNamePesron.add("Patricia"+ random.nextInt(100000));
         return listNamePesron;
     }
 
@@ -32,13 +34,14 @@ class Utils {
      * @return List<String> с названиями курсов
      */
     private static List<String> fillDescriptioSubject() {
+        Random random = new Random();
         List<String> listDescriptioSubject = new ArrayList<>();
-        listDescriptioSubject.add("Matan");
-        listDescriptioSubject.add("Geometry");
-        listDescriptioSubject.add("English");
-        listDescriptioSubject.add("Java");
-        listDescriptioSubject.add("Python");
-        listDescriptioSubject.add("JavaScript");
+        listDescriptioSubject.add("Matan" + random.nextInt(100000));
+        listDescriptioSubject.add("Geometry"+ random.nextInt(100000));
+        listDescriptioSubject.add("English"+ random.nextInt(100000));
+        listDescriptioSubject.add("Java"+ random.nextInt(100000));
+        listDescriptioSubject.add("Python"+ random.nextInt(100000));
+        listDescriptioSubject.add("JavaScript"+ random.nextInt(100000));
         return listDescriptioSubject;
     }
 
