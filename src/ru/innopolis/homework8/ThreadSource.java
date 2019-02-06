@@ -13,11 +13,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+/**
+ * Класс имплементирует Callable<List<String>>, предназначен
+ * для поиска вхождения слов в заданном ресурсе.
+ *
+ * @author KhankhasaevRV
+ * @since 2019.02.06
+ */
+
 class ThreadSource implements Callable<List<String>> {
 
     private final String source;
     private final String[] words;
-
 
     ThreadSource(String source, String[] words) {
         this.source = source;
@@ -57,7 +64,6 @@ class ThreadSource implements Callable<List<String>> {
         return sentenceWithWords;
     }
 
-
     /**
      * Заполняет List<String> findSentences предложениями из строки string, в
      * которых найдены слова из массива words
@@ -78,9 +84,10 @@ class ThreadSource implements Callable<List<String>> {
 
     /**
      * Добавляет предложения, в которых найдены слова из массива
-     * @param string строка, в котором содержится предложение с найденными словами
+     *
+     * @param string        строка, в котором содержится предложение с найденными словами
      * @param findSentences Лист с найденными предложениями
-     * @param matcherWord матчер слов по строке, в которой найдены слова
+     * @param matcherWord   матчер слов по строке, в которой найдены слова
      */
     private void addSentences(String string, List<String> findSentences, Matcher matcherWord) {
 
@@ -93,22 +100,47 @@ class ThreadSource implements Callable<List<String>> {
 
     /**
      * Добавляет предложения, в которых найдены слова из массива
-     * @param string строка, в котором содержится предложение с найденными словами
+     *
+     * @param string          строка, в котором содержится предложение с найденными словами
      * @param findSentences   Лист с найденными предложениями
-     * @param matcherWord  матчер слов по строке, в которой найдены слова
+     * @param matcherWord     матчер слов по строке, в которой найдены слова
      * @param matcherSentence матчер предложений по строке, в которой найдены слова
      */
     private void findMatch(String string, List<String> findSentences, Matcher matcherWord, Matcher matcherSentence) {
         while (matcherSentence.find()) {
-            if (matcherWord.start() >= matcherSentence.start() && matcherWord.end() <= matcherSentence.end()
-                    && (!findSentences.contains(string.substring(matcherSentence.start(), matcherSentence.end())))) {
+            if (isWordInSentence(matcherWord, matcherSentence)
+                    && isNewSentence(string, findSentences, matcherSentence)) {
 
                 findSentences.add(string.substring(matcherSentence.start(), matcherSentence.end()));
             }
         }
     }
 
+    /**
+     * Проверяет есть ли уже это предложение в списке предложений, в которых
+     * уже найдены искомые слова.
+     *
+     * @param string          строка с предложением
+     * @param findSentences   лист предложений, в которых уже найдены искомые слова
+     * @param matcherSentence матчер предложения
+     * @return true, если такого предложения нет среди найденных, иначе false
+     */
+    private boolean isNewSentence(String string, List<String> findSentences, Matcher matcherSentence) {
+        return !findSentences.contains(string.substring(matcherSentence.start(), matcherSentence.end()));
+    }
 
+    /**
+     * Проверяет входит ли найденное слово в предложение, оценка производится на
+     * основании позиций начала и окончания слова, позиции начала и окончания предложения
+     * в строке.
+     *
+     * @param matcherWord     матчер текущего слова
+     * @param matcherSentence матчер текущего предложения
+     * @return true, если слово входит в данное предложение, иначе false.
+     */
+    private boolean isWordInSentence(Matcher matcherWord, Matcher matcherSentence) {
+        return matcherWord.start() >= matcherSentence.start() && matcherWord.end() <= matcherSentence.end();
+    }
 
     /**
      * Возвращает индекс конца последнего предложения в строке
@@ -125,8 +157,6 @@ class ThreadSource implements Callable<List<String>> {
         while (matcher.find()) {
             lastEndSentence = matcher.end() - 1;
         }
-
-
         return lastEndSentence;
     }
 
