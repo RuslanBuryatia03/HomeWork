@@ -11,6 +11,8 @@ import java.util.Random;
 /**
  * Класс для генерации текстовых файлов
  * заданного размера
+ * @author KhankhasaevRV
+ * @since 07.02.2019
  */
 
 public class GeneratorTxtFile {
@@ -24,31 +26,33 @@ public class GeneratorTxtFile {
     private final Random randomInt = new Random();
 
     /**
-     * Заполняет массив слов длиной count_words из sourse
-     * @param sourse источник
-     * @param count_words количество слов в массиве
-     * @return  String[] длиной count_words
+     * Заполняет массив слов длиной countWords из source
+     * @param source источник
+     * @param countWords количество слов в массиве
+     * @return  String[] длиной countWords
      */
 
-    String[] fillListWords(String sourse, int count_words) {
+    String[] fillListWords(String source, int countWords) {
 
         List<String> words = new ArrayList<>();
-        String[] wordArr = new String[count_words];
+        String[] wordArr = new String[countWords];
 
-        try (InputStream input = new URL(sourse).openStream()) {
+        try (InputStream input = new URL(source).openStream()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
 
                 while (reader.ready()) {
                     String line = reader.readLine();
-                    List<String> d;
-                    if ((d = findWord(line)) != null) {
-                        words.addAll(d);
+                    List<String> listFindWords;
+                    if ((listFindWords = findWord(line)) != null) {
+                        words.addAll(listFindWords);
                     }
-                    if (words.size() >= count_words) break;
+                    if (words.size() >= countWords) {
+                        break;
+                    }
                     System.out.println(line);
                 }
 
-                wordArr = words.toArray(new String[count_words]);
+                wordArr = words.toArray(new String[]{});
             } catch (UnsupportedEncodingException e) {
                 System.out.println("Неподдерживаемая кодировка");
                 e.printStackTrace();
@@ -82,7 +86,7 @@ public class GeneratorTxtFile {
             int fileSize = 0;
             try (FileOutputStream fileOutputStream = new FileOutputStream(new File(path, fileName))) {
 
-                boolean beginSent = false;
+                boolean isBeginSent = false;
                 int numberWord = 0;
                 int currentNumberWord = 0;
                 int numberSent = randomInt.nextInt(NUMBER_SENTENCES) + 1;
@@ -99,8 +103,8 @@ public class GeneratorTxtFile {
                     byte[] buffer = words[j].getBytes();
                     int comma = randomInt.nextInt(PROBABILITY_COMMA) + 1;
                     if (fileSize + buffer.length + 4 <= size) {
-                        if (!beginSent) {
-                            beginSent = true;
+                        if (!isBeginSent) {
+                            isBeginSent = true;
                             numberWord = randomInt.nextInt(NUMBER_WORDS) + 1;
                             wordToUpperCase(buffer);
                         }
@@ -113,7 +117,7 @@ public class GeneratorTxtFile {
                             case ". ":
                             case "! ":
                             case "? ":
-                                beginSent = false;
+                                isBeginSent = false;
                                 currentNumberWord = 0;
                                 ++currentNumberSent;
                                 fileOutputStream.write(tokenPrepination.getBytes(), 0, 2);

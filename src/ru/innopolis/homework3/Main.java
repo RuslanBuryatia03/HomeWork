@@ -1,6 +1,13 @@
 package ru.innopolis.homework3;
 
 
+/**
+ * Класс для генерации текстовых файлов заданного размера
+ * из массива слов заданного размера
+ * @author KhankhasaevRV
+ * @since 07.02.2019
+ */
+
 public class Main {
 
 
@@ -10,8 +17,6 @@ public class Main {
     private static final int COUNT_FILES = 20;
     private static final int FILE_SIZE = 10000;
     private static final int PROBABILITY = 2;
-    private static String[] words;
-
 
     public static void main(String[] args) {
 
