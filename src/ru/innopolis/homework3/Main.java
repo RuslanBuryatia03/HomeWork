@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
 
         GeneratorTxtFile generatorTxtFile = new GeneratorTxtFile();
-        words = generatorTxtFile.fillListWords(SOURCE, COUNT_WORDS);
+        String[] words = generatorTxtFile.fillListWords(SOURCE, COUNT_WORDS);
         generatorTxtFile.getFiles(OUTPUT_DIRECTORY, COUNT_FILES, FILE_SIZE, words, PROBABILITY);
     }
 }
