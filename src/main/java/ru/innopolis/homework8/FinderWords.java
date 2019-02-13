@@ -26,7 +26,7 @@ public class FinderWords {
     private final int count_sources;  // COUNT_SOURCES = 50;
     private static final int COUNT_THREAD = 2;
     private static final String[] WORDS = {"ALICE", "WORKING", "MIKE"};
-    private static final String PATH = "./out/result.txt";
+    private static final String PATH = "./src/test/resources/inputData/result.txt";
 //    private static final String SOURCE_NAME = "http://www.gutenberg.org/ratelimiter.php/cache/epub/{0}/pg{0}.txt";
     private final String[] sources;
 

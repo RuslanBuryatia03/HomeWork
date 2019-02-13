@@ -26,7 +26,7 @@ public class FinderWordsTest {
 
     private static final int COUNT_SOURCES = 3;
     private static final int COUNT_THREAD = 2;
-    private static final String PATH = "./out/result.txt";
+    private static final String PATH = "./src/test/resources/inputData/result.txt";
     private static final Logger LOGGER = LoggerFactory.getLogger(FinderWordsTest.class);
     private final String SOURCE_NAME = "file:src/test/resources/inputData/file_{0}.txt";
 
