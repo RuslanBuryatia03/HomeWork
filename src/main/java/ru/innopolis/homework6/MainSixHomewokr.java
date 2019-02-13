@@ -15,7 +15,8 @@ public class MainSixHomewokr {
         String filename = "./src/ru/innopolis/homework6/SomeClass.java";
         String loadClass = "ru.innopolis.homework6.SomeClass";
         String wantedString = "public void doWork()  {";
-        String fileClass = "./src/ru/innopolis/homework6/SomeClass.class";
+//        String fileClass = "./src/ru/innopolis/homework6/SomeClass.class";
+        String fileClass = "./out/SomeClass.class";
         InvokeMethod invokeMethod = new InvokeMethod(filename, loadClass, wantedString, fileClass);
 
         String enteredText = invokeMethod.readConsole();

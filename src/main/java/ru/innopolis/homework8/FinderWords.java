@@ -1,7 +1,7 @@
 package ru.innopolis.homework8;
 
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -31,7 +31,7 @@ public class FinderWords {
     private final String[] sources;
 
 
-    FinderWords() {
+    public FinderWords() {
         sources = rangeClosed(1, COUNT_SOURCES)
                 .mapToObj(i -> MessageFormat.format(SOURCE_NAME, i))
                 .toArray(String[]::new);
@@ -41,11 +41,11 @@ public class FinderWords {
     /**
      * Ищет количество вхождений слов из WORDS в ресурсах sources
      */
-    Optional<Date> getOccurency() {
+    public Date getOccurency() {
         long timeBeg = System.currentTimeMillis();
-        if (!clearResultFile()) {
+        if (!clearResultFile(PATH)) {
             System.out.println("Не могу удалить результирующий файл!");
-            return Optional.empty();
+            return null;
         }
         List<ThreadSource> listThreadSource = new ArrayList<>();
         List<FutureTask<List<String>>> listFutureTask = new ArrayList<>();
@@ -55,7 +55,6 @@ public class FinderWords {
                             listThreadSource.add(new ThreadSource(sources[i], WORDS));
                             listFutureTask.add(new FutureTask<>(listThreadSource.get(i)));
                             executorService.execute(listFutureTask.get(i));
-
                         }
                 );
         if (isDoneAllThreads(listFutureTask)) {
@@ -67,18 +66,21 @@ public class FinderWords {
                     List<String> sourceSentenceList = null;
                     try {
                         sourceSentenceList = listFutureTask.get(i).get();
+                        writeToFile(sourceSentenceList, PATH);
                     } catch (ExecutionException e) {
                         System.out.println("Что то пошло не так");
                         e.printStackTrace();
                     } catch (InterruptedException e) {
                         System.out.println("Поток был прерван");
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    writeToFile(sourceSentenceList);
+
                     System.out.println(OptionalInt.of(sourceSentenceList.size()).orElse(0));
                 });
         long timeEnd = System.currentTimeMillis();
-        return Optional.of(new Date(timeEnd - timeBeg));
+        return new Date(timeEnd - timeBeg);
 
     }
 
@@ -90,7 +92,8 @@ public class FinderWords {
      * @return true, если все потоки завершены, иначе false
      */
     private boolean isDoneAllThreads(List<FutureTask<List<String>>> listFutureTask) {
-        return iterate(0, i -> i + 1).mapToObj(i -> listFutureTask)
+        return iterate(0, i -> i + 1)
+                .mapToObj(i -> listFutureTask)
                 .anyMatch(FinderWords::allTasksDone);
     }
 
@@ -99,12 +102,13 @@ public class FinderWords {
      *
      * @param dateDiffer время исполнения
      */
-    void printTimeExecution(Date dateDiffer) {
+    String printTimeExecution(Date dateDiffer) {
         DateFormat formatt = new SimpleDateFormat("HH:mm:ss.SSS");
         formatt.setTimeZone(TimeZone.getTimeZone("UTC"));
         String dateFormatted = formatt.format(dateDiffer);
-        System.out.println(
-                "Количество потоков - " + COUNT_THREAD + ", Количество ресурсов - " + COUNT_SOURCES + " время - " + dateFormatted);
+        String outString =  "Количество потоков - " + COUNT_THREAD + ", Количество ресурсов - " + COUNT_SOURCES + " время - " + dateFormatted;
+//        System.out.println(outString);
+        return outString;
     }
 
     /**
@@ -125,8 +129,8 @@ public class FinderWords {
      *
      * @return true если файл удален, иначе false
      */
-    private boolean clearResultFile() {
-        File fileObj = new File(PATH);
+    boolean clearResultFile(String path) {
+        File fileObj = new File(path);
         return (fileObj.exists() && fileObj.delete()) || !fileObj.exists();
     }
 
@@ -135,11 +139,11 @@ public class FinderWords {
      *
      * @param sentenceWithWords List<String> который необходимо записать
      */
-    private void writeToFile(List<String> sentenceWithWords) {
+    boolean writeToFile(List<String> sentenceWithWords, String path) throws IOException {
         if (sentenceWithWords == null) {
-            return;
+            return false;
         }
-        try (FileOutputStream fileOutputStream = new FileOutputStream(PATH, true)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(path, true)) {
 
             sentenceWithWords.forEach(i -> {
                 byte[] buffer = (i + "\n").getBytes();
@@ -149,13 +153,11 @@ public class FinderWords {
                     e.printStackTrace();
                 }
             });
-        } catch (FileNotFoundException e) {
+        } catch (IOException  e) {
             System.out.println("Путь не найден");
             e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("Что то пошло не так при записи в файл, возможно файл занят");
-            e.printStackTrace();
+            throw new IOException();
         }
+        return true;
     }
-
 }

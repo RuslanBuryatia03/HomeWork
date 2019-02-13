@@ -21,12 +21,12 @@ import java.util.stream.IntStream;
  * @since 2019.02.06
  */
 
-class ThreadSource implements Callable<List<String>> {
+public class ThreadSource implements Callable<List<String>> {
 
     private final String source;
     private final String[] words;
 
-    ThreadSource(String source, String[] words) {
+    public ThreadSource(String source, String[] words) {
         this.source = source;
         this.words = words;
     }
@@ -57,9 +57,9 @@ class ThreadSource implements Callable<List<String>> {
                     beginSentence = new StringBuilder(line.substring(lastInd));
                 }
             }
-
         } catch (IOException e) {
             System.out.println("Не могу получить данные с ресурса - " + source);
+            e.printStackTrace();
         }
         return sentenceWithWords;
     }
