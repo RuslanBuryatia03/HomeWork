@@ -22,11 +22,15 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class FinderWordsTest {
 
-    private static final int COUNT_SOURCES = 50;
-    private static final int COUNT_THREAD = 10;
+
+
+    private static final int COUNT_SOURCES = 3;
+    private static final int COUNT_THREAD = 2;
     private static final String PATH = "./out/result.txt";
     private static final Logger LOGGER = LoggerFactory.getLogger(FinderWordsTest.class);
-    FinderWords finderWords = new FinderWords();
+    private final String SOURCE_NAME = "file:src/test/resources/inputData/file_{0}.txt";
+
+    FinderWords finderWords = new FinderWords(SOURCE_NAME, COUNT_SOURCES );
 
     @BeforeEach
     void setUp() {
@@ -77,7 +81,7 @@ public class FinderWordsTest {
 
     @Test
     void finderWordsCompleteTest() {
-        LOGGER.info("clearResultFileTest...");
-        assertThat(finderWords.getOccurency().getTime(), Matchers.greaterThan(1000L));
+        LOGGER.info("finderWordsCompleteTest...");
+        assertThat(finderWords.getOccurency().getTime(), Matchers.greaterThan(10L));
     }
 }

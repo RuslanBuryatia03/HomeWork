@@ -23,17 +23,18 @@ import static java.util.stream.IntStream.*;
  */
 public class FinderWords {
 
-    private static final int COUNT_SOURCES = 50;
-    private static final int COUNT_THREAD = 10;
+    private final int count_sources;  // COUNT_SOURCES = 50;
+    private static final int COUNT_THREAD = 2;
     private static final String[] WORDS = {"ALICE", "WORKING", "MIKE"};
     private static final String PATH = "./out/result.txt";
-    private static final String SOURCE_NAME = "http://www.gutenberg.org/ratelimiter.php/cache/epub/{0}/pg{0}.txt";
+//    private static final String SOURCE_NAME = "http://www.gutenberg.org/ratelimiter.php/cache/epub/{0}/pg{0}.txt";
     private final String[] sources;
 
 
-    public FinderWords() {
-        sources = rangeClosed(1, COUNT_SOURCES)
-                .mapToObj(i -> MessageFormat.format(SOURCE_NAME, i))
+    public FinderWords(String source_name, int count_sources) {
+        this.count_sources = count_sources;
+        sources = rangeClosed(1, count_sources)
+                .mapToObj(i -> MessageFormat.format(source_name, i))
                 .toArray(String[]::new);
     }
 
@@ -50,7 +51,7 @@ public class FinderWords {
         List<ThreadSource> listThreadSource = new ArrayList<>();
         List<FutureTask<List<String>>> listFutureTask = new ArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(COUNT_THREAD);
-        range(0, COUNT_SOURCES)
+        range(0, count_sources)
                 .forEach(i -> {
                             listThreadSource.add(new ThreadSource(sources[i], WORDS));
                             listFutureTask.add(new FutureTask<>(listThreadSource.get(i)));
@@ -106,7 +107,7 @@ public class FinderWords {
         DateFormat formatt = new SimpleDateFormat("HH:mm:ss.SSS");
         formatt.setTimeZone(TimeZone.getTimeZone("UTC"));
         String dateFormatted = formatt.format(dateDiffer);
-        String outString =  "Количество потоков - " + COUNT_THREAD + ", Количество ресурсов - " + COUNT_SOURCES + " время - " + dateFormatted;
+        String outString =  "Количество потоков - " + COUNT_THREAD + ", Количество ресурсов - " + count_sources + " время - " + dateFormatted;
 //        System.out.println(outString);
         return outString;
     }
