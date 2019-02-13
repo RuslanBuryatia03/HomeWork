@@ -30,7 +30,7 @@ public class FinderWordsTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(FinderWordsTest.class);
     private final String SOURCE_NAME = "file:src/test/resources/inputData/file_{0}.txt";
 
-    FinderWords finderWords = new FinderWords(SOURCE_NAME, COUNT_SOURCES );
+    FinderWords finderWords = new FinderWords(SOURCE_NAME, COUNT_SOURCES, COUNT_THREAD );
 
     @BeforeEach
     void setUp() {

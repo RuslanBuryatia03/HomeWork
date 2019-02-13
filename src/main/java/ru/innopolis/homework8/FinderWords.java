@@ -23,21 +23,19 @@ import static java.util.stream.IntStream.*;
  */
 public class FinderWords {
 
-    private final int count_sources;  // COUNT_SOURCES = 50;
-    private static final int COUNT_THREAD = 2;
     private static final String[] WORDS = {"ALICE", "WORKING", "MIKE"};
     private static final String PATH = "./src/test/resources/inputData/result.txt";
-//    private static final String SOURCE_NAME = "http://www.gutenberg.org/ratelimiter.php/cache/epub/{0}/pg{0}.txt";
     private final String[] sources;
+    private final int count_sources;
+    private static int count_thread;
 
-
-    public FinderWords(String source_name, int count_sources) {
+    public FinderWords(String source_name, int count_sources, int count_thread) {
         this.count_sources = count_sources;
+        this.count_thread = count_thread;
         sources = rangeClosed(1, count_sources)
                 .mapToObj(i -> MessageFormat.format(source_name, i))
                 .toArray(String[]::new);
     }
-
 
     /**
      * Ищет количество вхождений слов из WORDS в ресурсах sources
@@ -50,7 +48,7 @@ public class FinderWords {
         }
         List<ThreadSource> listThreadSource = new ArrayList<>();
         List<FutureTask<List<String>>> listFutureTask = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(COUNT_THREAD);
+        ExecutorService executorService = Executors.newFixedThreadPool(count_thread);
         range(0, count_sources)
                 .forEach(i -> {
                             listThreadSource.add(new ThreadSource(sources[i], WORDS));
@@ -107,8 +105,7 @@ public class FinderWords {
         DateFormat formatt = new SimpleDateFormat("HH:mm:ss.SSS");
         formatt.setTimeZone(TimeZone.getTimeZone("UTC"));
         String dateFormatted = formatt.format(dateDiffer);
-        String outString =  "Количество потоков - " + COUNT_THREAD + ", Количество ресурсов - " + count_sources + " время - " + dateFormatted;
-//        System.out.println(outString);
+        String outString =  "Количество потоков - " + count_thread + ", Количество ресурсов - " + count_sources + " время - " + dateFormatted;
         return outString;
     }
 
@@ -120,7 +117,7 @@ public class FinderWords {
      */
 
     private static boolean allTasksDone(List<FutureTask<List<String>>> listFutureTask) {
-        return rangeClosed(0, COUNT_THREAD)
+        return rangeClosed(0, count_thread)
                 .allMatch(i -> listFutureTask.get(i).isDone());
     }
 
